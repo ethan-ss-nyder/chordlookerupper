@@ -75,11 +75,10 @@ public class SpotifyHandler {
      * Prompts the user with Spotify's authorization website, asking for
      * permissions.
      */
-    public static void promptUserForAuthentication() {
+    public static void promptUserForAuthentication(URI oURL) {
         Desktop desktop = java.awt.Desktop.getDesktop();
-        URI oURL;
         try {
-            oURL = new URI(authorizationCodeUriRequest.execute().toString());
+            oURL = new URI(oURL);
             desktop.browse(oURL);
         } catch (URISyntaxException | IOException e) {
             System.out.println("Can't browse URI — Invalid.");
