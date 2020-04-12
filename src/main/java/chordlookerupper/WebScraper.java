@@ -1,5 +1,26 @@
 package chordlookerupper;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+
+/**
+ * A sample class demonstrating how to use Jsoup to parse all the results of a
+ * Google page, given a query. If you're going to use this, please give credit!
+ * 
+ * <p>
+ * To add the Jsoup dependency to your Gradle project, make sure you add
+ * {@code implementation 'org.jsoup:jsoup:1.13.1'} to your {@code build.gradle}
+ * 
+ * @author Jordan Bancino
+ */
 public class WebScraper {
     /**
      * Use Jsoup to scrape a google page with the given query and get all the links
