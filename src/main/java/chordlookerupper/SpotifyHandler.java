@@ -34,7 +34,7 @@ public class SpotifyHandler {
     private static final SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
             .setClientSecret(clientSecret).setRedirectUri(redirectUri).build();
     private static AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-    private static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
+    static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
             .scope("user-read-currently-playing").show_dialog(false).build();
     private static AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = spotifyApi
             .authorizationCodeRefresh().build();
@@ -78,7 +78,7 @@ public class SpotifyHandler {
     public static void promptUserForAuthentication(URI oURL) {
         Desktop desktop = java.awt.Desktop.getDesktop();
         try {
-            oURL = new URI(oURL);
+            oURL = new URI(oURL.toString());
             desktop.browse(oURL);
         } catch (URISyntaxException | IOException e) {
             System.out.println("Can't browse URI — Invalid.");
@@ -99,7 +99,7 @@ public class SpotifyHandler {
             BufferedReader reader = new BufferedReader(isr);
             String line = reader.readLine();
             if (!line.isEmpty()) {
-                String[] strArray = line.split("=", 2);
+                String[] strArray = line.split("=");
                 strArray[1] = strArray[1].substring(0, strArray[1].length() - 9);
                 server.close();
                 return strArray[1];
@@ -135,16 +135,6 @@ public class SpotifyHandler {
         } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
             return null;
-        }
-    }
-
-    public static void getArtistFromURL(String url) {
-        Desktop desktop = java.awt.Desktop.getDesktop();
-        URI uri = SpotifyHttpManager.makeUri(url);
-        try {
-            desktop.browse(uri);
-        } catch (IOException e) {
-            System.out.println("Can't browse URI — Invalid.");
         }
     }
 }

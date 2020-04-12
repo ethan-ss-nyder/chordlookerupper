@@ -6,7 +6,7 @@ import com.wrapper.spotify.model_objects.specification.Track;
 
 public class App {
     public static void main(String[] args) throws IOException {
-        SpotifyHandler.promptUserForAuthentication();
+        SpotifyHandler.promptUserForAuthentication(SpotifyHandler.authorizationCodeUriRequest.execute());
         SpotifyHandler.buildAuthCodeRequestWithURI();
         SpotifyHandler.authorizationCode_Sync();
         SpotifyHandler.buildRefreshCodeRequest();
