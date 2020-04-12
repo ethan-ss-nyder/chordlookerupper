@@ -100,7 +100,7 @@ public class SpotifyHandler {
             BufferedReader reader = new BufferedReader(isr);
             String line = reader.readLine();
             if (!line.isEmpty()) {
-                String[] strArray = line.split("=");
+                String[] strArray = line.split("=", 2);
                 strArray[1] = strArray[1].substring(0, strArray[1].length() - 9);
                 server.close();
                 return strArray[1];
