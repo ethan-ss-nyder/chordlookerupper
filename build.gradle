@@ -24,7 +24,7 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.1-jre'
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:4.3.0'
-    implementation 'com.google.api-client:google-api-client:1.30.5'
+    implementation 'org.jsoup:jsoup:1.13.1'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
