@@ -1,5 +1,16 @@
 package chordlookerupper;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+
 public class WebScraper {
     /**
      * Use Jsoup to scrape a google page with the given query and get all the links

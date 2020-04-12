@@ -8,7 +8,7 @@ public class App {
     public static Track track;
 
     public static void main(String[] args) throws IOException {
-        SpotifyHandler.promptUserForAuthentication();
+        SpotifyHandler.promptUserForAuthentication(SpotifyHandler.authorizationCodeUriRequest.execute());
         SpotifyHandler.buildAuthCodeRequestWithURI();
         SpotifyHandler.authorizationCode_Sync();
         SpotifyHandler.buildRefreshCodeRequest();
