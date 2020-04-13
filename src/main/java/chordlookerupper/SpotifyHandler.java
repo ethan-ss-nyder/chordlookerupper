@@ -1,13 +1,11 @@
 package chordlookerupper;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
@@ -37,14 +35,14 @@ public class SpotifyHandler {
     private static final SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId)
             .setClientSecret(clientSecret).setRedirectUri(redirectUri).build();
     private static AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-    static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
+    private static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
             .scope("user-read-currently-playing").show_dialog(false).build();
     private static AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = spotifyApi
             .authorizationCodeRefresh().build();
 
-
     public static void init() throws IOException {
-        promptUserForAuthentication(authorizationCodeUriRequest.execute());
+        var browser = new Browser();
+        browser.openURI(authorizationCodeUriRequest.execute());
         buildAuthCodeRequestWithURI();
         authorizationCode_Sync();
         buildRefreshCodeRequest();
@@ -59,7 +57,7 @@ public class SpotifyHandler {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
 
-            //System.out.println("Authentication token recieved");
+            // System.out.println("Authentication token recieved");
         } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -76,23 +74,9 @@ public class SpotifyHandler {
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
 
-            //System.out.println("Refresh token recieved");
+            // System.out.println("Refresh token recieved");
         } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Prompts the user with Spotify's authorization website, asking for
-     * permissions.
-     */
-    public static void promptUserForAuthentication(URI oURL) {
-        Desktop desktop = java.awt.Desktop.getDesktop();
-        try {
-            oURL = new URI(oURL.toString());
-            desktop.browse(oURL);
-        } catch (URISyntaxException | IOException e) {
-            System.out.println("Can't browse URI — Invalid.");
         }
     }
 
@@ -140,7 +124,7 @@ public class SpotifyHandler {
     public static Track getUsersCurrentlyPlayingTrack_Sync() {
         try {
             final GetUsersCurrentlyPlayingTrackRequest getUsersCurrentlyPlayingTrackRequest = spotifyApi
-            .getUsersCurrentlyPlayingTrack().build();
+                    .getUsersCurrentlyPlayingTrack().build();
             final CurrentlyPlaying currentlyPlaying = getUsersCurrentlyPlayingTrackRequest.execute();
             return currentlyPlaying.getItem();
         } catch (IOException | SpotifyWebApiException e) {
