@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URI;
 
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
@@ -15,22 +14,20 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 
 public class Spotify {
 
-    public static Spotify createInstance(String clientId, String clientSecret, String scope, String redirectUrl) {
-        return new Spotify(clientId, clientSecret, scope, SpotifyHttpManager.makeUri(redirectUrl));
-    }
-
     private final SpotifyApi api;
-    private final URI redirecUri;
     private final String scope;
+    private final int serverPort;
 
     private Thread updateCredentialsThread;
 
-    private Spotify(String clientId, String clientSecret, String scope, URI redirectUri) {
-        this.api = new SpotifyApi.Builder().setClientId(clientId).setClientSecret(clientSecret)
-                .setRedirectUri(redirectUri).build();
-
-        this.redirecUri = redirectUri;
+    public Spotify(String clientId, String clientSecret, String scope, int tokenPort) {
+        this.serverPort = tokenPort;
         this.scope = scope;
+        this.api = new SpotifyApi.Builder()
+            .setClientId(clientId)
+            .setClientSecret(clientSecret)
+            .setRedirectUri(SpotifyHttpManager.makeUri("http://localhost:" + tokenPort))
+            .build();
     }
 
     private void updateCredentials(AuthorizationCodeRefreshRequest refreshRequest)
@@ -51,7 +48,7 @@ public class Spotify {
 
         String code = null;
 
-        ServerSocket server = new ServerSocket(redirecUri.getPort());
+        ServerSocket server = new ServerSocket(serverPort);
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime <= timeout) {
             Socket clientSocket = server.accept();

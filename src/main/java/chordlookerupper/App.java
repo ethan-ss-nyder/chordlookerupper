@@ -2,57 +2,72 @@ package chordlookerupper;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 
-public class App {
-    public static void main(String[] args) throws IOException, SpotifyWebApiException {
-        // SpotifyHandler.init();
-        //
-        // var refreshThread = new Thread(() -> {
-        // while (!Thread.interrupted()) {
-        // try {
-        // Thread.sleep(2000);
-        // } catch (InterruptedException e) {
-        // Thread.currentThread().interrupt();
-        // break;
-        // }
-        // SpotifyHandler.authorizationCodeRefresh_Sync();
-        // Track track = SpotifyHandler.getUsersCurrentlyPlayingTrack_Sync();
-        // System.out.println("Artist: " + track.getArtists()[0].getName().toString());
-        // System.out.println("Song: " + track.getName());
-        // }
-        // });
-        // refreshThread.start();
+public class App implements Runnable {
+    private final String clientId = "18917dddb06542c1b26f9efc141d9286";
+    private final String clientSecret = "9f5f25f7384146a492f5ef26d1fb073c";
+    private final String scope = "user-read-currently-playing";
+    private final int tokenRecievePort = 8888;
+    private final long updateInterval = 1000;
 
-        final String clientId = "18917dddb06542c1b26f9efc141d9286";
-        final String clientSecret = "9f5f25f7384146a492f5ef26d1fb073c";
-        final String redirectUri = "http://localhost:8888";
-        final String scope = "user-read-currently-playing";
+    private final Spotify spotify = new Spotify(clientId, clientSecret, scope, tokenRecievePort);
 
-        var spotify = Spotify.createInstance(clientId, clientSecret, scope, redirectUri);
-        spotify.authenticateUser(10000);
+    private final String queryFormat = "%s chords";
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread trackMonitor = new Thread(new App());
+        trackMonitor.start();
+        System.out.println("Started monitoring track changes.");
+        trackMonitor.join();
+    }
+
+    @Override
+    public void run() {
+        try {
+            spotify.authenticateUser(10000);
+        } catch (SpotifyWebApiException | IOException e) {
+            e.printStackTrace();
+            System.err.println("Authentication error.");
+            return;
+        }
+        
         var scraper = new WebScraper();
         String lastTrack = null;
-        while (true) {
+
+        while (!Thread.interrupted()) {
             try {
                 var track = spotify.getCurrentlyPlayingTrack();
-                System.out.println("Currently playing track: " + track.getName());
+                
                 if (lastTrack == null) {
                     lastTrack = track.getName();
                 }
 
                 if (!lastTrack.equals(track.getName())) {
-                    var links = scraper.getGoogleLinks(String.format("%s chords", track.getName()));
+                    System.out.println("Track changed: " + track.getName());
+                    var links = scraper.getGoogleLinks(String.format(queryFormat, track.getName()));
                     scraper.browse(new URI(links.get(0)));
                     lastTrack = track.getName();
                 }
                 
-                Thread.sleep(2000);
-            } catch (Exception e) {
+                Thread.sleep(updateInterval);
+            } catch (SpotifyWebApiException e) {
                 e.printStackTrace();
+                System.err.println("Spotify error occured.");
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Unable to perform Google query.");
+                return;
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                System.err.println("Google returned a malformed link.");
+                return;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-
         }
     }
 }
