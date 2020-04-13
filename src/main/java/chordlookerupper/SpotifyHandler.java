@@ -21,10 +21,13 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 
 public class SpotifyHandler {
+
+    private static final int serverPort = 8888;
+
     /** Information */
     private static final String clientId = "18917dddb06542c1b26f9efc141d9286";
     private static final String clientSecret = "9f5f25f7384146a492f5ef26d1fb073c";
-    private static URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8888");
+    private static URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:" + serverPort);
     private static String code = "";
 
     /**
@@ -100,7 +103,7 @@ public class SpotifyHandler {
      * @throws IOException
      */
     public static String getURI() throws IOException {
-        ServerSocket server = new ServerSocket(8888);
+        ServerSocket server = new ServerSocket(serverPort);
         while (true) {
             Socket clientSocket = server.accept();
             InputStreamReader isr = new InputStreamReader(clientSocket.getInputStream());
