@@ -39,6 +39,14 @@ public class SpotifyHandler {
     private static AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest = spotifyApi
             .authorizationCodeRefresh().build();
 
+
+    public static void init() throws IOException {
+        promptUserForAuthentication(authorizationCodeUriRequest.execute());
+        buildAuthCodeRequestWithURI();
+        authorizationCode_Sync();
+        buildRefreshCodeRequest();
+    }
+
     /** Used to convert the URI code into a useable access token. */
     public static void authorizationCode_Sync() {
         try {
