@@ -1,12 +1,13 @@
 package chordlookerupper;
 
 import java.io.IOException;
+import java.net.URI;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.specification.Track;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SpotifyWebApiException {
         // SpotifyHandler.init();
         //
         // var refreshThread = new Thread(() -> {
@@ -31,12 +32,22 @@ public class App {
         final String scope = "user-read-currently-playing";
 
         var spotify = Spotify.createInstance(clientId, clientSecret, scope, redirectUri);
-        var browser = new Browser();
+        spotify.authenticateUser(10000);
+        var scraper = new WebScraper();
         String lastTrack = null;
         while (true) {
             try {
                 var track = spotify.getCurrentlyPlayingTrack();
-                System.out.printf("Currently playing track: " + track.getName());
+                System.out.println("Currently playing track: " + track.getName());
+                if (lastTrack == null) {
+                    lastTrack = track.getName();
+                }
+
+                if (!lastTrack.equals(track.getName())) {
+                    var links = scraper.getGoogleLinks(String.format("%s guitar music", track.getName()));
+                    scraper.browse(new URI(links.get(0)));
+                    lastTrack = track.getName();
+                }
                 
                 Thread.sleep(2000);
             } catch (Exception e) {

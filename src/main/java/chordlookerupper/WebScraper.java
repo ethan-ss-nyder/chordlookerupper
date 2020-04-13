@@ -3,11 +3,14 @@ package chordlookerupper;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.awt.Desktop;
 
 import org.jsoup.Jsoup;
 
@@ -22,6 +25,16 @@ import org.jsoup.Jsoup;
  * @author Jordan Bancino
  */
 public class WebScraper {
+
+    public void browse(URI url) throws IOException {
+        if (Desktop.isDesktopSupported()) {
+            var desktop = Desktop.getDesktop();
+            desktop.browse(url);
+        } else {
+            throw new UnsupportedOperationException("Desktop is not supported on this platform.");
+        }
+    }
+
     /**
      * Use Jsoup to scrape a google page with the given query and get all the links
      * on the first result page. Usage is simple, just input your query, and this

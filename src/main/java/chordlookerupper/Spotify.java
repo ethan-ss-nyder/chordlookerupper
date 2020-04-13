@@ -46,8 +46,8 @@ public class Spotify {
             .show_dialog(false)
             .build();
 
-        var browser = new Browser();
-        browser.openURI(codeUriRequest.execute());
+        var browser = new WebScraper();
+        browser.browse(codeUriRequest.execute());
 
         String code = null;
 

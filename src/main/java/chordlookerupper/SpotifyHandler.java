@@ -41,8 +41,8 @@ public class SpotifyHandler {
             .authorizationCodeRefresh().build();
 
     public static void init() throws IOException {
-        var browser = new Browser();
-        browser.openURI(authorizationCodeUriRequest.execute());
+        var browser = new WebScraper();
+        browser.browse(authorizationCodeUriRequest.execute());
         buildAuthCodeRequestWithURI();
         authorizationCode_Sync();
         buildRefreshCodeRequest();
