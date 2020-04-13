@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.specification.Track;
 
 public class App {
     public static void main(String[] args) throws IOException, SpotifyWebApiException {
@@ -44,7 +43,7 @@ public class App {
                 }
 
                 if (!lastTrack.equals(track.getName())) {
-                    var links = scraper.getGoogleLinks(String.format("%s guitar music", track.getName()));
+                    var links = scraper.getGoogleLinks(String.format("%s chords", track.getName()));
                     scraper.browse(new URI(links.get(0)));
                     lastTrack = track.getName();
                 }
