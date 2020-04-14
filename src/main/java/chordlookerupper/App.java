@@ -41,14 +41,16 @@ public class App implements Runnable {
      */
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
+        System.out.println("Waiting for authentication...");
         try {
             app.spotify.authenticateUser();
-            System.out.println("Authentiated successfully.");
         } catch (SpotifyWebApiException | IOException e) {
             e.printStackTrace();
             System.err.println("Authentication error.");
             return;
         }
+
+        System.out.println("Authentiated successfully.");
 
         Thread trackMonitor = new Thread(app);
         trackMonitor.start();
