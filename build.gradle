@@ -32,3 +32,23 @@ application {
     // Define the main class for the application.
     mainClassName = 'chordlookerupper.App'
 }
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': application.mainClassName
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+/**
+ * Note: If you're building on Linux, remove the "cmd /c" part. If you're building on Windows, make sure you do so from the
+ * Visual Studio x64 Developer command prompt. Yes, the architecture is important.
+ */
+task nativeImage(dependsOn: jar, type: Exec) {
+    commandLine "cmd", "/c", "native-image", "-jar", "$buildDir/libs/${project.getName()}.jar", "--initialize-at-build-time=org.apache", "--enable-https", "$buildDir/${project.getName()}"
+}

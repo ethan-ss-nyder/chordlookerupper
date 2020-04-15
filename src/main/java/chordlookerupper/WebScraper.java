@@ -27,12 +27,31 @@ import org.jsoup.Jsoup;
 public class WebScraper {
 
     public void browse(URI url) throws IOException {
-        if (Desktop.isDesktopSupported()) {
-            var desktop = Desktop.getDesktop();
-            desktop.browse(url);
-        } else {
-            throw new UnsupportedOperationException("Desktop is not supported on this platform.");
+        try {
+            if (Desktop.isDesktopSupported()) {
+                var desktop = Desktop.getDesktop();
+                desktop.browse(url);
+                return;
+            }
+        } catch (IllegalArgumentException e) {
+            // GraalVM doesn't support the AWT Desktop, here's a fallback option.
+            var os = System.getProperty("os.name").toLowerCase();
+            var runtime = Runtime.getRuntime();
+            if (os.contains("windows")) {
+                runtime.exec("rundll32 url.dll,FileProtocolHandler " + url.toString());
+                return;
+            } else if (os.contains("mac")) {
+                runtime.exec("open " + url.toString());
+                return;
+            } else if (os.contains("nux") || os.contains("nix")) {
+                runtime.exec("xdg-open" + url.toString());
+                return;
+            }
         }
+
+        // If everything fails, there's always this. Kinda crappy UX, but at this
+        // point it's all we've got.
+        System.out.printf("Please open this URL in your browser: [ %s ]\n", url.toString());
     }
 
     /**
