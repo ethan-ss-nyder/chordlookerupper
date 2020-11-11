@@ -96,7 +96,7 @@ public class WebScraper {
         // Let Jsoup take it from here.
         var source = Jsoup.parse(connection.getInputStream(), null, encodedQuery);
         // Google links are stored in div elements with a class "r".
-        var elements = source.getElementsByClass("r");
+        var elements = source.getElementsByClass("g");
         // Iterate over each element
         for (var element : elements) {
             // Get all the links in each query.
