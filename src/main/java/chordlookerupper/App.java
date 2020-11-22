@@ -26,9 +26,9 @@ public class App implements Runnable {
     // will be more responsive, but consume more CPU clock cycles.
     private final long updateInterval = 1000;
 
-    // The query format. The track name is passed in for "%s". This entire string
-    // is passed into the Google query when the track changes.
-    private final String queryFormat = "%s chords";
+    // The query format. The track name is passed in for the first %s and the artist name is passed in for the second %s.
+    // This entire string is passed into the Google query when the track changes.
+    private final String queryFormat = "%s chords %s";
 
     // Set up the Spotify client.
     private final Spotify spotify = new Spotify(clientId, clientSecret, tokenRecievePort);
@@ -78,10 +78,10 @@ public class App implements Runnable {
                 if (track != null) {
                     // Only open the track query if it was changed.
                     if (lastTrack == null || !lastTrack.equals(track.getName())) {
-                        System.out.println("Track changed: " + track.getName());
+                        System.out.println("Track changed: " + track.getName() + " by " + track.getArtists()[0].getName());
                         // Scrape Google for links on this query. Check the WebScraper documentation for
                         // logistics.
-                        var links = scraper.getGoogleLinks(String.format(queryFormat, track.getName()));
+                        var links = scraper.getGoogleLinks(String.format(queryFormat, track.getName(), track.getArtists()[0].getName()));
                         scraper.browse(new URI(links.get(0)));
                         lastTrack = track.getName();
                     }
